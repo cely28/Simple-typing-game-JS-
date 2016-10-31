@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<style type="text/css">
+		*{padding: 0; margin: 0;}
+		#game{
+			width: 1000px; 
+			height: 500px; 
+			margin: auto;
+			position: relative;
+		}
+		#head{
+			width: 100px;
+			height: 100px;
+			position: relative;
+			top: 3px;
+		}
+		#main{
+			width: 1000px; 
+			height: 500px;
+			background: #fffa9c;
+			border-radius: 10px;
+		}
+		#start{
+			width: 100px;
+			height: 40px;
+			background: red;
+			position: absolute;
+			left: 0; 
+			top: 0;
+			bottom: 0;
+			right: 0;
+			margin: auto;
+			border-radius: 10px;
+			text-align: center;
+			font: 16px/40px "微软雅黑";
+			color: #fff;
+		}
+		#over{
+			width: 150px;
+			height: 40px;
+			background: red;
+			position: absolute;
+			left: 0; 
+			top: 0;
+			bottom: 0;
+			right: 0;
+			margin: auto;
+			border-radius: 10px;
+			text-align: center;
+			font: 16px/40px "微软雅黑";
+			color: #fff;
+			display: none;
+		}
+		/*小球样式*/
+		.ball{
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			background-size: contain;
+			background-image: url(img/bb.png);
+			background-repeat: no-repeat;
+			text-align: center;
+			font: 20px/50px "微软雅黑";
+			position: absolute;
+			top: 100px;/*该值等于head的height*/
+			color: #fff;
+		}
+	</style>
+	<script type="text/javascript">
+		window.onload=function(){
+			
+			var oMain=document.getElementById("main");
+			var oStart=document.getElementById("start");
+			var oOver=document.getElementById("over");
+			var oHead=document.getElementById("head");
+			var ballR=50;
+			
+			var count=0;
+			oStart.onclick=function(){
+				oStart.style.display="none";
+				document.title="分数："+count;
+				run();
+			}
+			oOver.onclick=function(){
+				location.reload(true);
+				document.title="简单打字通";
+			}
+			
+			var makeTimer, fallTimer;
+			function run(){
+				console.log("游戏开始！");
+				
+				makeBall();//游戏开始就生成一个球
+				makeTimer=setInterval(function(){
+					makeBall();
+				}, 800);
+				
+				fallTimer=setInterval(function(){
+					fallBall();
+				}, 10)
+				
+				
+				window.onkeydown=function(ev){
+					var oEvent=ev||window.event;
+					var code=oEvent.keycode||oEvent.which;
+					for(var n=0; n<oMain.childNodes.length; n++){
+						if(oMain.childNodes[n].innerHTML==String.fromCharCode(code)){
+							oMain.removeChild(oMain.childNodes[n]);
+							count++;
+							document.title="分数："+count;
+							return;
+						}
+					}
+				}
+			}
+			
+			function makeBall(){
+				//小球随机x坐标
+				var oBall=document.createElement("div");
+				//生成小球
+				oBall.className="ball";
+				oBall.innerHTML=getRandomCode();
+				var randomLeft=Math.floor(Math.random()*(oMain.offsetWidth-ballR))
+				oBall.style.left=randomLeft+"px";
+				oHead.style.left=randomLeft-25+"px";//25为head与小球中心坐标差
+				oMain.appendChild(oBall);
+			}
+			
+			function fallBall(){
+				//所有小球运动
+				var speed=1;//小球每次下落距离
+				var oBalls=document.getElementsByClassName("ball");
+				var maxTop=oMain.offsetTop+oMain.offsetHeight-ballR;
+				for(var n=0; n<oBalls.length; n++){
+					var top=oBalls[n].offsetTop;
+					oBalls[n].style.top=top+speed+"px";
+					if(top >= maxTop){
+						console.log("游戏结束");
+						clearInterval(makeTimer);
+						clearInterval(fallTimer);
+						oOver.style.display="block";
+					}
+				}
+			}
+			
+			function getRandomCode(){
+				return String.fromCharCode(65+Math.floor(Math.random()*26));
+			}
+		}
+	</script>
+	<body>
+		<div id="game">
+			<img id="head" src="img/pp.png"/>
+			<div id="main"></div>
+			<div id="start">Start</div>
+			<div id="over">GAME OVER</div>
+		</div>
+	</body>
+</html>
